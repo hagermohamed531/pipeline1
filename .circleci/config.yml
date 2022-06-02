@@ -71,6 +71,12 @@ jobs:
       - image: alpine:latest
     steps:
       - run: apk add --update curl
+      - run: 
+          name: cli_install
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: smoke test
           command: |
@@ -90,6 +96,8 @@ workflows:
         - myjob1
         - create_infrastructure
         - configure_infrastructure
+            requires:
+              - create_infrastructure
         - smoke_test:
             requires:
               - create_infrastructure
