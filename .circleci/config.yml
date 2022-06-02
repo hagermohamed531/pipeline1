@@ -34,18 +34,18 @@ jobs:
       steps:
         - checkout # check out the code in the project directory
         - run: echo "hello world" # run the `echo` command
-  #create_infrastructure: 
-  #    docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #      - checkout
-  #      - run:
-   #         name: Create Cloudformation Stack
-    #        command: |
-     #         aws cloudformation deploy \
-      #          --template-file template.yml \
-       #         --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-        #        --region us-east-1
+  create_infrastructure: 
+    docker:
+       - image: amazon/aws-cli
+    steps:
+        - checkout
+        - run:
+            name: Create Cloudformation Stack
+            command: |
+              aws cloudformation deploy \
+                --template-file template.yml \
+                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+                --region us-east-1
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
@@ -63,10 +63,32 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i inventory.txt main-remote.yml
-   
+
+  # Exercise: Smoke Testing
+  smoke_test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: apk add --update curl
+      - run:
+          name: smoke test
+          command: |
+            URL="https://blog.udacity.com/"
+            # Test if website exists
+            if curl -s --head ${URL} 
+            then
+              return 0
+            else
+              return 1
+            fi
+      - destroy_environment
 # Sequential workflow
 workflows:
   my_workflow:
       jobs:
-        #- create_infrastructure
+        - create_infrastructure
         - configure_infrastructure
+        - smoke_test
+
+
+  
