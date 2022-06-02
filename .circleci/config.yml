@@ -71,19 +71,19 @@ jobs:
       - image: alpine:latest
     steps:
       - run: apk add --update curl
-      - run: echo myStack-${CIRCLE_WORKFLOW_ID:0:5}
       - run:
           name: smoke test
-          command: return 1
-            #URL="https://blog.udacity.com/"
+          command: |
+            URL="https://blog.udacity.com/"
             # Test if website exists
-            #if curl -s --head ${URL} 
-            #then
-              #return 0
-            #else
-              #return 1
-            #fi
-      - destroy_environment
+            if curl -s --head ${URL} 
+            then
+              return 0
+            else
+              return 1
+            fi
+      - destroy_environment  
+
 # Sequential workflow
 workflows:
   my_workflow:
