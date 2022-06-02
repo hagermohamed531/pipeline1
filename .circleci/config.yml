@@ -157,15 +157,10 @@ jobs:
 workflows:
   my_workflow:
       jobs:
-        #- myjob1
         - create_infrastructure
         - configure_infrastructure:
             requires:
               - create_infrastructure
-        #- smoke_test:
-            #requires:
-              #- create_infrastructure
-              #- configure_infrastructure
         - create_and_deploy_front_end
         - promote_to_production:
             requires: 
